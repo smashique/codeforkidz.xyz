@@ -1,5 +1,6 @@
 // core.logic.js — Number Pattern Engine (MVP)
 
+
 const GameEngine = (() => {
   let level = 1;
   let currentAnswer = null;
