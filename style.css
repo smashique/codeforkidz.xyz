@@ -1,4 +1,4 @@
-/* OMEGA AI - Immersive UI Upgrade V15.5 */
+/* OMEGA AI - Immersive UI Upgrade V15.6 */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -11,6 +11,7 @@
     --card-bg: #161b22;
     --correct: #238636;
     --border: #30363d;
+    --alert: #ff4d4d;
 }
 
 body {
@@ -35,6 +36,27 @@ header {
 
 .logo { font-weight: 900; color: var(--neon-blue); font-size: 1.4rem; }
 
+/* Timer UI: High-Efficiency HUD */
+#timer-ui {
+    margin-left: 20px;
+    padding: 8px 20px;
+    background: rgba(0, 242, 255, 0.05);
+    border-radius: 20px;
+    font-weight: bold;
+    color: var(--neon-blue);
+    border: 1px solid var(--neon-blue);
+    min-width: 140px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+#timer-ui.low-time {
+    color: var(--alert);
+    border-color: var(--alert);
+    box-shadow: 0 0 10px rgba(255, 77, 77, 0.3);
+    animation: pulse 1s infinite;
+}
+
 /* Main Container: Prominent & Centered */
 #game-container {
     flex-grow: 1;
@@ -53,13 +75,13 @@ header {
     border: 1px solid var(--neon-blue);
     box-shadow: 0 0 40px rgba(0, 242, 255, 0.15);
     width: 95%;
-    max-width: 800px; /* কার্ড বড় করা হয়েছে */
+    max-width: 800px;
     text-align: center;
     transition: 0.4s;
 }
 
 .pattern-box { 
-    font-size: clamp(2rem, 5vw, 4rem); /* প্যাটার্ন বড় করা হয়েছে */
+    font-size: clamp(2rem, 5vw, 4rem);
     margin-bottom: 40px; 
     font-weight: 700;
 }
@@ -93,7 +115,7 @@ header {
     transform: scale(1.02);
 }
 
-/* Footer: Centered Alignment Fix */
+/* Footer & Other UI Elements */
 footer {
     padding: 40px 20px;
     text-align: center;
@@ -123,7 +145,6 @@ footer {
     background: var(--neon-blue);
 }
 
-/* Turn Indicator Styling */
 .turn-indicator {
     font-size: 1.4rem;
     margin-bottom: 25px;
@@ -135,4 +156,10 @@ footer {
 .p-score.active {
     color: var(--neon-blue);
     border-bottom: 2px solid var(--neon-blue);
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
 }
