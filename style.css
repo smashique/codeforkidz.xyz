@@ -1,5 +1,5 @@
-/* OMEGA AI - Immersive UI Master V18.0 */
-/* 1. Global Reset & Variables */
+/* OMEGA AI - Infinite Multiverse UI Master V20.5 */
+/* 1. Global Reset & Multiverse Variables */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -7,19 +7,20 @@
 }
 
 :root {
-    /* Default: Space Theme */
     --neon-blue: #00f2ff;
     --dark-bg: #0a0c10;
-    --card-bg: #161b22;
+    --card-bg: rgba(22, 27, 34, 0.95);
     --border: #30363d;
     --alert: #ff4d4d;
     --success: #2ecc71;
+    --glow: rgba(0, 242, 255, 0.3);
 }
 
-/* 2. THEMATIC UI/UX: Custom Themes */
-body.theme-jungle { --neon-blue: #2ecc71; --dark-bg: #0b1a0e; --card-bg: #142d18; }
-body.theme-underwater { --neon-blue: #3498db; --dark-bg: #051923; --card-bg: #0a2e3f; }
-body.theme-candy { --neon-blue: #ff69b4; --dark-bg: #2d132c; --card-bg: #4a1c44; }
+/* 2. INFINITE THEMATIC UI: 3D Environment Overlays */
+body.theme-jungle { --neon-blue: #2ecc71; --dark-bg: #0b1a0e; }
+body.theme-underwater { --neon-blue: #3498db; --dark-bg: #051923; }
+body.theme-candy { --neon-blue: #ff69b4; --dark-bg: #2d132c; }
+body.theme-space { --neon-blue: #00f2ff; --dark-bg: #0a0c10; }
 
 body {
     background-color: var(--dark-bg);
@@ -29,90 +30,91 @@ body {
     display: flex;
     flex-direction: column;
     overflow-x: hidden;
-    transition: background 0.5s ease;
+    /* Multiverse Transition: রঙ পরিবর্তনের সময় স্মুথনেস বজায় রাখবে */
+    transition: filter 0.8s cubic-bezier(0.4, 0, 0.2, 1), background 0.5s ease;
 }
 
-/* 3. DISCOVERY PHASE: Setup Box Styling */
+/* ৩ডি এনভায়রনমেন্ট ইফেক্ট (Pseudo-elements for Depth) */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: radial-gradient(circle at center, transparent, rgba(0,0,0,0.4));
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* 3. HUD & DISCOVERY UI */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 5%;
+    border-bottom: 1px solid var(--border);
+    background: rgba(0,0,0,0.2);
+    backdrop-filter: blur(10px);
+}
+
 .setup-box {
     background: var(--card-bg);
     padding: 40px;
-    border-radius: 20px;
+    border-radius: 24px;
     border: 2px solid var(--neon-blue);
+    box-shadow: 0 0 30px var(--glow);
     width: 95%;
     max-width: 600px;
     text-align: center;
 }
 
 .discovery-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    margin: 25px 0;
+    display: grid;
+    gap: 15px;
+    margin: 20px 0;
     text-align: left;
 }
 
-select {
-    background: #000;
-    color: var(--neon-blue);
-    border: 1px solid var(--border);
-    padding: 12px;
-    border-radius: 8px;
-    font-family: inherit;
-    font-size: 1rem;
-}
-
-.theme-selection {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-}
-
-.theme-btn {
-    padding: 15px;
-    border: 1px solid var(--border);
-    background: rgba(255,255,255,0.05);
-    color: white;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.theme-btn.active {
-    border-color: var(--neon-blue);
-    background: rgba(0, 242, 255, 0.1);
-    box-shadow: 0 0 15px var(--neon-blue);
-}
-
-/* 4. ADRENALINE TIMER: Progress Bar HUD */
+/* 4. ADRENALINE HUD: Progress Bar */
 #timer-hud {
     display: flex;
     align-items: center;
-    gap: 15px;
-    min-width: 250px;
+    gap: 12px;
 }
 
 #progress-bar-container {
-    flex-grow: 1;
-    height: 10px;
-    background: #333;
-    border-radius: 5px;
+    width: 150px;
+    height: 8px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
     overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.05);
 }
 
 #timer-fill {
     height: 100%;
     width: 100%;
     background: var(--neon-blue);
-    transition: width 1s linear, background 0.3s;
+    box-shadow: 0 0 10px var(--neon-blue);
+    transition: width 1s linear;
 }
 
-#timer-text {
-    font-weight: 900;
-    color: var(--neon-blue);
-    min-width: 40px;
+/* 5. MATH DISPLAY: LaTeX/Algebra Support */
+.pattern-box {
+    font-size: clamp(2rem, 5vw, 4rem);
+    margin: 30px 0;
+    font-weight: 700;
+    min-height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-/* 5. ADRENALINE EFFECTS: Pulse & Shake */
+/* KaTeX সমীকরণগুলোর সাইজ ঠিক রাখা */
+.katex {
+    font-size: 1.2em !important;
+    color: white;
+}
+
+/* 6. ADRENALINE EFFECTS: Pulse & Shake */
 .shake-urgent {
     animation: shake 0.2s infinite, adrenaline-glow 0.5s infinite;
 }
@@ -125,75 +127,53 @@ select {
 }
 
 @keyframes adrenaline-glow {
-    0% { border-color: var(--alert); box-shadow: 0 0 10px var(--alert); }
+    0% { border-color: var(--alert); box-shadow: 0 0 20px var(--alert); }
     100% { border-color: var(--neon-blue); box-shadow: 0 0 40px var(--alert); }
 }
 
-/* 6. UTILITY BUTTONS: Print & Share */
-.social-actions {
-    margin-top: 30px;
-    display: flex;
-    justify-content: center;
-    gap: 15px;
+/* 7. INTERACTIVE ELEMENTS */
+.algorithm-card {
+    background: var(--card-bg);
+    padding: 50px 30px;
+    border-radius: 24px;
+    border: 1px solid var(--neon-blue);
+    width: 95%;
+    max-width: 800px;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
 }
 
+.option-btn {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    color: white;
+    padding: 22px;
+    font-size: 1.3rem;
+    font-weight: bold;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.option-btn:hover {
+    background: var(--neon-blue);
+    color: #000;
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 10px 20px var(--glow);
+}
+
+/* Utility / Social Buttons */
 .util-btn {
     background: transparent;
     border: 1px solid var(--border);
     color: #8b949e;
-    padding: 8px 15px;
-    border-radius: 5px;
+    padding: 10px 20px;
+    border-radius: 8px;
     cursor: pointer;
-    font-size: 0.9rem;
     transition: 0.3s;
 }
 
 .util-btn:hover {
     color: var(--neon-blue);
     border-color: var(--neon-blue);
-}
-
-/* Existing Header & Card Refinement */
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 8%;
-    border-bottom: 1px solid var(--border);
-}
-
-.algorithm-card {
-    background: var(--card-bg);
-    padding: 40px;
-    border-radius: 20px;
-    border: 1px solid var(--neon-blue);
-    width: 95%;
-    max-width: 800px;
-    text-align: center;
-    transition: transform 0.3s ease;
-}
-
-.num { color: #fff; font-weight: bold; }
-.target { color: var(--neon-blue); border-bottom: 3px solid var(--neon-blue); }
-
-.options-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-}
-
-.option-btn {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: white;
-    padding: 20px;
-    font-size: 1.2rem;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.option-btn:hover {
-    background: var(--neon-blue);
-    color: #000;
 }
