@@ -1,10 +1,23 @@
 /**
- * OMEGA AI - Verified Logic Engine V15.1
+ * OMEGA AI - Verified Multi-Player Engine V15.2
+ * Logic: Procedural Pattern Generation + Float Safety
  */
 class GameEngine {
     constructor() {
         this.level = 1;
-        this.score = 0;
+        this.operators = ['+'];
+        this.players = [];
+        this.currentPlayerIndex = 0;
+    }
+
+    // প্লেয়ার সংখ্যা অনুযায়ী ইঞ্জিন রিসেট করা
+    initPlayers(count) {
+        this.players = Array.from({ length: count }, (_, i) => ({
+            id: i + 1,
+            score: 0
+        }));
+        this.currentPlayerIndex = 0;
+        this.level = 1;
         this.operators = ['+'];
     }
 
@@ -30,7 +43,13 @@ class GameEngine {
         const correctAnswer = this.calculateNext(sequence[sequence.length - 1], step, operator);
         const options = this.generateOptions(correctAnswer);
 
-        return { sequence, options, correctAnswer, level: this.level };
+        return { 
+            sequence, 
+            options, 
+            correctAnswer, 
+            level: this.level,
+            currentPlayer: this.players[this.currentPlayerIndex] 
+        };
     }
 
     calculateNext(current, step, op) {
@@ -58,11 +77,16 @@ class GameEngine {
 
     validateAnswer(userAnswer, correctAnswer) {
         if (parseFloat(userAnswer) === parseFloat(correctAnswer)) {
+            // বর্তমান প্লেয়ারের স্কোর বাড়ানো
+            this.players[this.currentPlayerIndex].score += 10;
             this.level++;
-            this.score += 10;
             return true;
         }
         return false;
+    }
+
+    nextTurn() {
+        this.currentPlayerIndex = (this.currentPlayerIndex + 1) % this.players.length;
     }
 }
 
