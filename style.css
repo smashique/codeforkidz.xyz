@@ -1,4 +1,28 @@
 /* OMEGA AI - Immersive UI Upgrade V15.6 */
+/* SVG & Logo Centering */
+.logo-preview {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 0;
+}
+
+header {
+    display: flex;
+    flex-direction: column; /* ছোট স্ক্রিনে যাতে লোগো এবং টাইমার উপরে নিচে থাকে */
+    align-items: center;
+    gap: 15px;
+    padding: 20px 0;
+}
+
+@media (min-width: 768px) {
+    header {
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 25px 8%;
+    }
+}
 * {
     box-sizing: border-box;
     margin: 0;
