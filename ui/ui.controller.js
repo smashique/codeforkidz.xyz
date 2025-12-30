@@ -2,7 +2,6 @@ import { engine } from '../engine/core.logic.js';
 import { soundEngine } from '../engine/sound.logic.js';
 
 let gameTimer = null;
-// পেইড ইউজার হলে আনলিমিটেড টাইম, নতুবা ফ্রি লিমিট থেকে ব্যবহৃত সময় বিয়োগ
 let remainingTime = engine.isPaid ? 999999 : (engine.FREE_TIME_LIMIT - engine.getUsedTime());
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -10,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const scoreDisplay = document.getElementById('player-score');
     const headerNav = document.querySelector('nav');
 
-    // ১. টাইমার UI এলিমেন্ট তৈরি করা
+    // ১. টাইমার UI তৈরি
     const timerDisplay = document.createElement('span');
     timerDisplay.id = "timer-ui";
     headerNav.appendChild(timerDisplay);
@@ -18,11 +17,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function startTimer() {
         if (engine.isPaid || gameTimer) return;
-
         gameTimer = setInterval(() => {
             remainingTime--;
             updateTimerUI();
-            
             if (remainingTime <= 0) {
                 clearInterval(gameTimer);
                 engine.saveTime(engine.FREE_TIME_LIMIT);
@@ -62,8 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.select-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 soundEngine.init();
-                const count = parseInt(btn.dataset.players);
-                engine.initPlayers(count); 
+                engine.initPlayers(parseInt(btn.dataset.players)); 
                 startTimer();
                 initGame();
             });
@@ -105,31 +101,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function handleSubmission(userAnswer, correctAnswer) {
         const isCorrect = engine.validateAnswer(userAnswer, correctAnswer);
-        
         if (isCorrect) {
             soundEngine.playCorrect();
             if (typeof confetti === 'function') confetti({ particleCount: 100, spread: 70 });
-            gameContainer.innerHTML = `<div class="feedback correct">⚡ CORRECT! P${engine.currentPlayerIndex + 1} LOGIC VERIFIED!</div>`;
+            gameContainer.innerHTML = `<div class="feedback correct">⚡ CORRECT! P${engine.currentPlayerIndex + 1} SCORED!</div>`;
         } else {
             soundEngine.playWrong();
             gameContainer.innerHTML = `<div class="feedback wrong">❌ ERROR! WRONG PATTERN</div>`;
         }
-
         engine.nextTurn();
         setTimeout(initGame, 1500);
     }
 
-    // গুমরোড এবং লাইসেন্স কি সিস্টেম সহ পে-ওয়াল
+    // ৩. ফাইনাল পে-ওয়াল (গুমরোড + অ্যাক্টিভেশন)
     function showPaywall() {
-        const gumroadProductLink = "https://gumroad.com/l/your-product-id"; // আপনার গুমরোড লিংক এখানে দিন
+        const gumroadProductLink = "https://gumroad.com/l/your-actual-link"; 
 
         gameContainer.innerHTML = `
             <div class="paywall-box" style="text-align:center;">
-                <h2 style="color:#ff4d4d; font-size: 2rem; margin-bottom: 15px;">FREE TRIAL ENDED!</h2>
-                <p style="margin-bottom: 25px;">মাসিক সাবস্ক্রিপশন নিন এবং আনলিমিটেড AI প্যাটার্ন আনলক করুন।</p>
+                <h2 style="color:#ff4d4d; font-size: 2rem; margin-bottom: 15px;">PRO ACCESS REQUIRED</h2>
+                <p style="margin-bottom: 25px;">মাত্র $2.99/মাসে আনলক করুন আনলিমিটেড AI লজিক এবং মাল্টিপ্লেয়ার চ্যালেঞ্জ।</p>
                 
-                <a href="${gumroadProductLink}" target="_blank" class="select-btn" style="text-decoration:none; display:inline-block; margin-bottom:30px; background:var(--neon-blue); color:black;">
-                    Subscribe on Gumroad ($5/Month)
+                <a href="${gumroadProductLink}" target="_blank" class="select-btn" style="text-decoration:none; display:inline-block; margin-bottom:30px; background:var(--neon-blue); color:black; font-weight:bold;">
+                    Get Pro Access - $2.99/Month
                 </a>
                 
                 <div class="activation-zone" style="border-top: 1px solid #333; padding-top: 25px;">
@@ -137,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <input type="text" id="license-key-input" placeholder="Enter Key Here" style="padding:12px; border-radius:8px; border:1px solid var(--neon-blue); background:transparent; color:white; margin-top:10px; width: 100%; max-width: 300px; text-align:center;">
                     <br>
                     <button id="activate-btn" class="option-btn" style="margin-top: 15px; width: 100%; max-width: 300px;">Activate Now</button>
-                    <p id="key-error" style="color:#ff4d4d; display:none; margin-top:10px;">লাইসেন্স কী সঠিক নয়!</p>
+                    <p id="key-error" style="color:#ff4d4d; display:none; margin-top:10px;">লাইসেন্স কী সঠিক নয়!</p>
                 </div>
             </div>
         `;
