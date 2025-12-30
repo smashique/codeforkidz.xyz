@@ -38,17 +38,34 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleSubmission(userAnswer, correctAnswer) {
-        const isCorrect = engine.validateAnswer(userAnswer, correctAnswer);
-        
-        if (isCorrect) {
-            gameContainer.innerHTML = `<div class="feedback correct">CORE LOGIC MATCHED! NEXT LEVEL...</div>`;
-            setTimeout(initGame, 1000); // ১ সেকেন্ড পর পরের লেভেল
-        } else {
-            gameContainer.classList.add('shake');
-            setTimeout(() => gameContainer.classList.remove('shake'), 500);
-            alert("Logic Error: Try Again!");
-        }
-    }
+    const isCorrect = engine.validateAnswer(userAnswer, correctAnswer);
+    
+    if (isCorrect) {
+        // ১. কনফেটি ইফেক্ট ট্রিগার
+        confetti({
+            particleCount: 150,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#00f2ff', '#ffffff', '#238636']
+        });
 
+        // ২. ফিডব্যাক মেসেজ
+        gameContainer.innerHTML = `
+            <div class="feedback correct">
+                <h2 style="color: #00f2ff;">⚡ LOGIC VERIFIED!</h2>
+                <p>OMEGA Score: ${engine.score}</p>
+            </div>
+        `;
+        
+        setTimeout(initGame, 1200); 
+    } else {
+        gameContainer.classList.add('shake');
+        setTimeout(() => gameContainer.classList.remove('shake'), 500);
+        // ভুল হলে রেড ভাইব
+        const originalBg = gameContainer.style.borderColor;
+        gameContainer.style.borderColor = 'red';
+        setTimeout(() => gameContainer.style.borderColor = originalBg, 500);
+    }
+}
     initGame();
 });
