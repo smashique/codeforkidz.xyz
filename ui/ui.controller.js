@@ -2,6 +2,7 @@ import { engine } from '../engine/core.logic.js';
 import { soundEngine } from '../engine/sound.logic.js';
 
 let gameTimer = null;
+// পেইড ইউজার হলে আনলিমিটেড টাইম, নতুবা ফ্রি লিমিট থেকে ব্যবহৃত সময় বিয়োগ
 let remainingTime = engine.isPaid ? 999999 : (engine.FREE_TIME_LIMIT - engine.getUsedTime());
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -9,11 +10,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const scoreDisplay = document.getElementById('player-score');
     const headerNav = document.querySelector('nav');
 
-    // ১. টাইমার UI এলিমেন্ট সঠিকভাবে তৈরি করা
+    // ১. টাইমার UI এলিমেন্ট তৈরি করা
     const timerDisplay = document.createElement('span');
     timerDisplay.id = "timer-ui";
     headerNav.appendChild(timerDisplay);
-    updateTimerUI(); // শুরুতে একবার টাইমার দেখানো
+    updateTimerUI();
 
     function startTimer() {
         if (engine.isPaid || gameTimer) return;
@@ -22,7 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
             remainingTime--;
             updateTimerUI();
             
-            // সময় শেষ হলে পেমেন্ট গেটওয়ে দেখানো
             if (remainingTime <= 0) {
                 clearInterval(gameTimer);
                 engine.saveTime(engine.FREE_TIME_LIMIT);
@@ -34,13 +34,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateTimerUI() {
+        if (engine.isPaid) {
+            timerDisplay.innerText = "Access: UNLIMITED";
+            timerDisplay.classList.remove('low-time');
+            return;
+        }
         const mins = Math.floor(remainingTime / 60);
         const secs = remainingTime % 60;
         timerDisplay.innerText = `Time Left: ${mins}:${secs < 10 ? '0' : ''}${secs}`;
         if (remainingTime < 30) timerDisplay.classList.add('low-time');
     }
 
-    // ২. গেম রেন্ডারিং লজিক (বাটন ফিক্স সহ)
+    // ২. গেম ফ্লো লজিক
     function showPlayerSelection() {
         gameContainer.innerHTML = `
             <div class="setup-box">
@@ -56,10 +61,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.querySelectorAll('.select-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                soundEngine.init(); // সাউন্ড সক্রিয় করা
+                soundEngine.init();
                 const count = parseInt(btn.dataset.players);
                 engine.initPlayers(count); 
-                startTimer(); // প্রথম ক্লিকেই টাইমার চালু হবে
+                startTimer();
                 initGame();
             });
         });
@@ -93,7 +98,6 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
 
-        // বাটনগুলোতে ক্লিক লিসেনার যুক্ত করা
         document.querySelectorAll('.option-btn').forEach(btn => {
             btn.addEventListener('click', () => handleSubmission(btn.dataset.value, data.correctAnswer));
         });
@@ -115,14 +119,40 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(initGame, 1500);
     }
 
+    // গুমরোড এবং লাইসেন্স কি সিস্টেম সহ পে-ওয়াল
     function showPaywall() {
+        const gumroadProductLink = "https://gumroad.com/l/your-product-id"; // আপনার গুমরোড লিংক এখানে দিন
+
         gameContainer.innerHTML = `
             <div class="paywall-box" style="text-align:center;">
-                <h2 style="color:#ff4d4d;">LIMIT EXPIRED!</h2>
-                <p>আপনার ৫ মিনিটের ফ্রি এক্সেস শেষ হয়েছে।</p>
-                <button class="select-btn" onclick="window.open('https://wa.me/8801303680618')">অ্যাক্টিভেশন কি (Key) সংগ্রহ করুন</button>
+                <h2 style="color:#ff4d4d; font-size: 2rem; margin-bottom: 15px;">FREE TRIAL ENDED!</h2>
+                <p style="margin-bottom: 25px;">মাসিক সাবস্ক্রিপশন নিন এবং আনলিমিটেড AI প্যাটার্ন আনলক করুন।</p>
+                
+                <a href="${gumroadProductLink}" target="_blank" class="select-btn" style="text-decoration:none; display:inline-block; margin-bottom:30px; background:var(--neon-blue); color:black;">
+                    Subscribe on Gumroad ($5/Month)
+                </a>
+                
+                <div class="activation-zone" style="border-top: 1px solid #333; padding-top: 25px;">
+                    <p style="font-size: 0.9rem; color: #8b949e;">লাইসেন্স কী (License Key) আছে? এখানে দিন:</p>
+                    <input type="text" id="license-key-input" placeholder="Enter Key Here" style="padding:12px; border-radius:8px; border:1px solid var(--neon-blue); background:transparent; color:white; margin-top:10px; width: 100%; max-width: 300px; text-align:center;">
+                    <br>
+                    <button id="activate-btn" class="option-btn" style="margin-top: 15px; width: 100%; max-width: 300px;">Activate Now</button>
+                    <p id="key-error" style="color:#ff4d4d; display:none; margin-top:10px;">লাইসেন্স কী সঠিক নয়!</p>
+                </div>
             </div>
         `;
+
+        document.getElementById('activate-btn').onclick = () => {
+            const inputKey = document.getElementById('license-key-input').value.trim();
+            if (engine.validateLicenseKey(inputKey)) {
+                soundEngine.playCorrect();
+                alert("Unlimited Access Unlocked Successfully!");
+                location.reload(); 
+            } else {
+                soundEngine.playWrong();
+                document.getElementById('key-error').style.display = 'block';
+            }
+        };
     }
 
     showPlayerSelection();
