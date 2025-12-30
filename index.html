@@ -1,29 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CodePlayAI.xyz</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodePlayAI.xyz — AI Algorithm Game</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;900&display=swap" rel="stylesheet">
 </head>
 <body>
-  <header>
-    <h1>Welcome to CodePlayAI.xyz</h1>
-    <p>AI‑powered Algorithm & Coding Game (MVP)</p>
-  </header>
 
-  <main>
-<div id="game-container">
-  <p>Game UI will load here…</p>
-</div>
+    <header>
+        <div class="logo">OMEGA AI <span class="version">V15.0</span></div>
+        <nav>
+            <span id="player-score">Score: 0</span>
+            <span id="game-level">Level: 1</span>
+        </nav>
+    </header>
 
-  </main>
+    <main id="app">
+        <div id="game-container">
+            <div class="loading">INITIALIZING OMEGA ENGINE...</div>
+        </div>
+    </main>
 
-  <footer>
-    <p>Subscribe via Gumroad | বিকাশে পেমেন্ট WhatsApp করুন: 017XXXXXXXX</p>
-  </footer>
+    <footer>
+        <div class="footer-content">
+            <p>CodePlayAI.xyz | Powered by OMEGA AI Logic</p>
+            <div class="subscription-cta">
+                <button id="upgrade-btn">Unlock Unlimited AI Patterns</button>
+            </div>
+        </div>
+    </footer>
 
-<script src="engine/core.logic.js"></script>
-<script src="ui/ui.controller.js"></script>
+    <script type="module" src="engine/core.logic.js"></script>
+    <script type="module" src="ui/ui.controller.js"></script>
 </body>
 </html>
