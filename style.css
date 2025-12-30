@@ -1,4 +1,4 @@
-/* OMEGA AI - Professional Global Styles */
+/* OMEGA AI - Immersive UI Upgrade V15.5 */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -7,7 +7,7 @@
 
 :root {
     --neon-blue: #00f2ff;
-    --dark-bg: #0d1117;
+    --dark-bg: #0a0c10;
     --card-bg: #161b22;
     --correct: #238636;
     --border: #30363d;
@@ -23,101 +23,116 @@ body {
     overflow-x: hidden;
 }
 
+/* Header: Balanced Spacing */
 header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 5%;
+    padding: 25px 8%;
     border-bottom: 1px solid var(--border);
-    background: rgba(13, 17, 23, 0.95);
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    background: rgba(10, 12, 16, 0.98);
 }
 
-.logo { font-weight: 900; color: var(--neon-blue); letter-spacing: 1px; }
+.logo { font-weight: 900; color: var(--neon-blue); font-size: 1.4rem; }
 
+/* Main Container: Prominent & Centered */
 #game-container {
     flex-grow: 1;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    padding: 20px;
+    padding: 40px 20px;
+    width: 100%;
 }
 
-/* Algorithm Card Styling */
 .algorithm-card {
     background: var(--card-bg);
-    padding: clamp(20px, 5vw, 40px);
-    border-radius: 12px;
+    padding: clamp(30px, 6vw, 60px);
+    border-radius: 16px;
     border: 1px solid var(--neon-blue);
-    box-shadow: 0 0 25px rgba(0, 242, 255, 0.15);
-    width: 100%;
-    max-width: 600px;
+    box-shadow: 0 0 40px rgba(0, 242, 255, 0.15);
+    width: 95%;
+    max-width: 800px; /* কার্ড বড় করা হয়েছে */
     text-align: center;
+    transition: 0.4s;
 }
 
 .pattern-box { 
-    font-size: clamp(1.5rem, 4vw, 2.5rem); 
-    margin-bottom: 30px; 
+    font-size: clamp(2rem, 5vw, 4rem); /* প্যাটার্ন বড় করা হয়েছে */
+    margin-bottom: 40px; 
+    font-weight: 700;
 }
 
 .num { color: #fff; }
-.arrow { color: #8b949e; padding: 0 5px; }
-.target { color: var(--neon-blue); border-bottom: 3px solid var(--neon-blue); }
+.target { color: var(--neon-blue); border-bottom: 4px solid var(--neon-blue); }
 
-/* Grid Layouts */
-.options-grid, .selection-grid {
+/* Options: High-Visibility Buttons */
+.options-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
+    gap: 20px;
     width: 100%;
 }
 
-.option-btn, .select-btn {
+.option-btn {
     background: transparent;
     border: 1px solid var(--border);
     color: white;
-    padding: 15px;
-    font-size: 1.1rem;
+    padding: 20px;
+    font-size: 1.3rem;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border-radius: 8px;
+    transition: 0.3s;
+    border-radius: 10px;
 }
 
-.option-btn:hover, .select-btn:hover {
+.option-btn:hover {
     background: var(--neon-blue);
     color: #000;
+    box-shadow: 0 0 20px rgba(0, 242, 255, 0.5);
+    transform: scale(1.02);
+}
+
+/* Footer: Centered Alignment Fix */
+footer {
+    padding: 40px 20px;
+    text-align: center;
+    border-top: 1px solid var(--border);
+    background: var(--dark-bg);
+}
+
+.footer-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+#upgrade-btn {
+    background: white;
+    color: black;
+    border: none;
+    padding: 12px 24px;
     font-weight: bold;
-    transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(0, 242, 255, 0.4);
+    cursor: pointer;
+    border-radius: 5px;
+    transition: 0.3s;
 }
 
-/* UI Elements */
-.p-score { padding: 5px 10px; transition: 0.3s; }
-.p-score.active {
-    color: var(--neon-blue);
-    text-shadow: 0 0 10px var(--neon-blue);
-    border-bottom: 2px solid var(--neon-blue);
+#upgrade-btn:hover {
+    background: var(--neon-blue);
 }
 
+/* Turn Indicator Styling */
 .turn-indicator {
-    font-size: 1.2rem;
-    margin-bottom: 15px;
+    font-size: 1.4rem;
+    margin-bottom: 25px;
     color: #8b949e;
     text-transform: uppercase;
-    font-weight: bold;
+    letter-spacing: 4px;
 }
 
-/* Animations */
-.shake { animation: shake 0.5s ease-in-out; }
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-8px); }
-    50% { transform: translateX(8px); }
-    75% { transform: translateX(-4px); }
+.p-score.active {
+    color: var(--neon-blue);
+    border-bottom: 2px solid var(--neon-blue);
 }
-
-.feedback { font-size: 1.2rem; font-weight: bold; margin: 20px 0; }
-.feedback.correct { color: var(--neon-blue); }
