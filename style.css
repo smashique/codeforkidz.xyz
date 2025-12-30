@@ -1,179 +1,55 @@
-/* OMEGA AI - Infinite Multiverse UI Master V20.5 */
-/* 1. Global Reset & Multiverse Variables */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
+/* OMEGA AI - ULTRA PRO V21.0 */
 :root {
-    --neon-blue: #00f2ff;
-    --dark-bg: #0a0c10;
-    --card-bg: rgba(22, 27, 34, 0.95);
-    --border: #30363d;
-    --alert: #ff4d4d;
-    --success: #2ecc71;
-    --glow: rgba(0, 242, 255, 0.3);
+    --primary-glow: #00f2ff;
+    --accent-glow: #7000ff;
+    --glass-bg: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.1);
 }
-
-/* 2. INFINITE THEMATIC UI: 3D Environment Overlays */
-body.theme-jungle { --neon-blue: #2ecc71; --dark-bg: #0b1a0e; }
-body.theme-underwater { --neon-blue: #3498db; --dark-bg: #051923; }
-body.theme-candy { --neon-blue: #ff69b4; --dark-bg: #2d132c; }
-body.theme-space { --neon-blue: #00f2ff; --dark-bg: #0a0c10; }
 
 body {
-    background-color: var(--dark-bg);
-    color: white;
-    font-family: 'JetBrains Mono', monospace;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+    background: radial-gradient(circle at center, #1a1a2e 0%, #0f0f1b 100%);
     overflow-x: hidden;
-    /* Multiverse Transition: রঙ পরিবর্তনের সময় স্মুথনেস বজায় রাখবে */
-    transition: filter 0.8s cubic-bezier(0.4, 0, 0.2, 1), background 0.5s ease;
 }
 
-/* ৩ডি এনভায়রনমেন্ট ইফেক্ট (Pseudo-elements for Depth) */
-body::before {
-    content: "";
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: radial-gradient(circle at center, transparent, rgba(0,0,0,0.4));
-    pointer-events: none;
-    z-index: -1;
-}
-
-/* 3. HUD & DISCOVERY UI */
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 5%;
-    border-bottom: 1px solid var(--border);
-    background: rgba(0,0,0,0.2);
-    backdrop-filter: blur(10px);
-}
-
-.setup-box {
-    background: var(--card-bg);
-    padding: 40px;
-    border-radius: 24px;
-    border: 2px solid var(--neon-blue);
-    box-shadow: 0 0 30px var(--glow);
-    width: 95%;
-    max-width: 600px;
-    text-align: center;
-}
-
-.discovery-grid {
-    display: grid;
-    gap: 15px;
-    margin: 20px 0;
-    text-align: left;
-}
-
-/* 4. ADRENALINE HUD: Progress Bar */
-#timer-hud {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-#progress-bar-container {
-    width: 150px;
-    height: 8px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 10px;
-    overflow: hidden;
-    border: 1px solid rgba(255,255,255,0.05);
-}
-
-#timer-fill {
-    height: 100%;
-    width: 100%;
-    background: var(--neon-blue);
-    box-shadow: 0 0 10px var(--neon-blue);
-    transition: width 1s linear;
-}
-
-/* 5. MATH DISPLAY: LaTeX/Algebra Support */
-.pattern-box {
-    font-size: clamp(2rem, 5vw, 4rem);
-    margin: 30px 0;
-    font-weight: 700;
-    min-height: 100px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-/* KaTeX সমীকরণগুলোর সাইজ ঠিক রাখা */
-.katex {
-    font-size: 1.2em !important;
-    color: white;
-}
-
-/* 6. ADRENALINE EFFECTS: Pulse & Shake */
-.shake-urgent {
-    animation: shake 0.2s infinite, adrenaline-glow 0.5s infinite;
-}
-
-@keyframes shake {
-    0% { transform: translate(1px, 1px) rotate(0deg); }
-    25% { transform: translate(-2px, -1px) rotate(-1deg); }
-    50% { transform: translate(2px, 2px) rotate(1deg); }
-    100% { transform: translate(1px, 1px) rotate(0deg); }
-}
-
-@keyframes adrenaline-glow {
-    0% { border-color: var(--alert); box-shadow: 0 0 20px var(--alert); }
-    100% { border-color: var(--neon-blue); box-shadow: 0 0 40px var(--alert); }
-}
-
-/* 7. INTERACTIVE ELEMENTS */
+/* গেম কার্ডকে গ্লাস ইফেক্ট দেওয়া */
 .algorithm-card {
-    background: var(--card-bg);
-    padding: 50px 30px;
-    border-radius: 24px;
-    border: 1px solid var(--neon-blue);
-    width: 95%;
-    max-width: 800px;
-    text-align: center;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    background: var(--glass-bg);
+    backdrop-filter: blur(15px);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8), 
+                inset 0 0 20px rgba(0, 242, 255, 0.05);
+    border-radius: 30px;
+    padding: 50px;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
+/* বাটনগুলোকে গেমিং স্টাইল দেওয়া */
 .option-btn {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid var(--border);
-    color: white;
-    padding: 22px;
-    font-size: 1.3rem;
-    font-weight: bold;
-    border-radius: 16px;
-    cursor: pointer;
-    transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.option-btn:hover {
-    background: var(--neon-blue);
-    color: #000;
-    transform: translateY(-5px) scale(1.02);
-    box-shadow: 0 10px 20px var(--glow);
-}
-
-/* Utility / Social Buttons */
-.util-btn {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: #8b949e;
-    padding: 10px 20px;
-    border-radius: 8px;
+    background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));
+    border: 1px solid var(--glass-border);
+    border-radius: 15px;
+    color: #fff;
+    font-size: 1.5rem;
+    padding: 25px;
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
     cursor: pointer;
     transition: 0.3s;
 }
 
-.util-btn:hover {
-    color: var(--neon-blue);
-    border-color: var(--neon-blue);
+.option-btn:hover {
+    background: var(--primary-glow);
+    color: #000;
+    box-shadow: 0 0 30px var(--primary-glow);
+    transform: translateY(-5px);
+}
+
+/* টাইমার HUD */
+#timer-hud {
+    background: rgba(0,0,0,0.5);
+    padding: 10px 20px;
+    border-radius: 50px;
+    border: 1px solid var(--primary-glow);
+    display: flex;
+    align-items: center;
+    gap: 15px;
 }
