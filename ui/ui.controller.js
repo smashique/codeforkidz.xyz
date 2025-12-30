@@ -1,7 +1,7 @@
 import { engine } from '../engine/core.logic.js';
 import { soundEngine } from '../engine/sound.logic.js';
 
-let gameTimer;
+let gameTimer = null;
 let remainingTime = engine.isPaid ? 999999 : (engine.FREE_TIME_LIMIT - engine.getUsedTime());
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -9,31 +9,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const scoreDisplay = document.getElementById('player-score');
     const headerNav = document.querySelector('nav');
 
-    // টাইমার UI এলিমেন্ট তৈরি এবং যুক্ত করা
+    // ১. টাইমার UI এলিমেন্ট সঠিকভাবে তৈরি করা
     const timerDisplay = document.createElement('span');
     timerDisplay.id = "timer-ui";
     headerNav.appendChild(timerDisplay);
-
-    // --- টাইমার লজিক ---
+    updateTimerUI(); // শুরুতে একবার টাইমার দেখানো
 
     function startTimer() {
-        if (engine.isPaid) {
-            timerDisplay.innerText = "Access: UNLIMITED";
-            return;
-        }
-
-        if (gameTimer) return; // টাইমার একবারই শুরু হবে
+        if (engine.isPaid || gameTimer) return;
 
         gameTimer = setInterval(() => {
             remainingTime--;
             updateTimerUI();
             
-            // ইঞ্জিনে ব্যবহৃত সময় সেভ করা
-            engine.saveTime(engine.FREE_TIME_LIMIT - remainingTime);
-
+            // সময় শেষ হলে পেমেন্ট গেটওয়ে দেখানো
             if (remainingTime <= 0) {
                 clearInterval(gameTimer);
+                engine.saveTime(engine.FREE_TIME_LIMIT);
                 showPaywall();
+            } else {
+                engine.saveTime(engine.FREE_TIME_LIMIT - remainingTime);
             }
         }, 1000);
     }
@@ -42,28 +37,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const mins = Math.floor(remainingTime / 60);
         const secs = remainingTime % 60;
         timerDisplay.innerText = `Time Left: ${mins}:${secs < 10 ? '0' : ''}${secs}`;
-        
-        // ৩০ সেকেন্ডের নিচে আসলে এলার্ট স্টাইল (CSS .low-time ক্লাস ব্যবহার করবে)
-        if (remainingTime < 30) {
-            timerDisplay.classList.add('low-time');
-        }
+        if (remainingTime < 30) timerDisplay.classList.add('low-time');
     }
 
-    function showPaywall() {
-        gameContainer.innerHTML = `
-            <div class="paywall-box">
-                <h2 style="color:#ff4d4d; font-size: 2.5rem; margin-bottom: 20px;">TIME EXPIRED!</h2>
-                <p style="margin-bottom: 30px; font-size: 1.2rem;">আপনার আজকের ৫ মিনিটের ফ্রি ট্রায়াল শেষ।</p>
-                <div class="upgrade-options">
-                    <button class="select-btn" onclick="window.open('https://wa.me/8801303680618')">Unlock Unlimited Access</button>
-                    <button class="option-btn" style="margin-top: 20px;" onclick="location.reload()">Try Again Later</button>
-                </div>
-            </div>
-        `;
-    }
-
-    // --- গেম ফ্লো লজিক ---
-
+    // ২. গেম রেন্ডারিং লজিক (বাটন ফিক্স সহ)
     function showPlayerSelection() {
         gameContainer.innerHTML = `
             <div class="setup-box">
@@ -78,20 +55,18 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         document.querySelectorAll('.select-btn').forEach(btn => {
-            btn.onclick = () => {
-                // ব্রাউজার অডিও পলিসি মেনে সাউন্ড ইঞ্জিন ইনিশিয়েট করা
-                soundEngine.init(); 
+            btn.addEventListener('click', () => {
+                soundEngine.init(); // সাউন্ড সক্রিয় করা
                 const count = parseInt(btn.dataset.players);
                 engine.initPlayers(count); 
+                startTimer(); // প্রথম ক্লিকেই টাইমার চালু হবে
                 initGame();
-            };
+            });
         });
     }
 
     function initGame() {
-        // গেম শুরু হওয়ার সাথে সাথে টাইমার চালু করা
         if (remainingTime > 0 || engine.isPaid) {
-            startTimer();
             const data = engine.generatePattern();
             renderPattern(data);
         } else {
@@ -100,7 +75,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderPattern(data) {
-        // স্কোরবোর্ড রেন্ডার
         scoreDisplay.innerHTML = engine.players.map(p => 
             `<span class="p-score ${p.id - 1 === engine.currentPlayerIndex ? 'active' : ''}">
                 P${p.id}: ${p.score}
@@ -111,50 +85,45 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="turn-indicator">PLAYER ${data.currentPlayer.id}'S TURN</div>
             <div class="algorithm-card">
                 <div class="pattern-box">
-                    ${data.sequence.join(' → ')} → <span class="target">?</span>
+                    ${data.sequence.map(n => `<span class="num">${n}</span>`).join(' <span class="arrow">→</span> ')} <span class="arrow">→</span> <span class="target">?</span>
                 </div>
                 <div class="options-grid">
-                    ${data.options.map(opt => `
-                        <button class="option-btn" data-value="${opt}">${opt}</button>
-                    `).join('')}
+                    ${data.options.map(opt => `<button class="option-btn" data-value="${opt}">${opt}</button>`).join('')}
                 </div>
             </div>
         `;
 
+        // বাটনগুলোতে ক্লিক লিসেনার যুক্ত করা
         document.querySelectorAll('.option-btn').forEach(btn => {
-            btn.onclick = () => handleSubmission(btn.dataset.value, data.correctAnswer);
+            btn.addEventListener('click', () => handleSubmission(btn.dataset.value, data.correctAnswer));
         });
     }
 
     function handleSubmission(userAnswer, correctAnswer) {
-        // সময় শেষ হয়ে গেলে আর সাবমিশন নেবে না
-        if (remainingTime <= 0 && !engine.isPaid) return;
-
         const isCorrect = engine.validateAnswer(userAnswer, correctAnswer);
         
         if (isCorrect) {
             soundEngine.playCorrect();
-            if (typeof confetti === 'function') confetti({ particleCount: 150, spread: 70 });
-            gameContainer.innerHTML = `<div class="feedback correct">⚡ CORRECT! PLAYER ${engine.currentPlayerIndex + 1} SCORED!</div>`;
+            if (typeof confetti === 'function') confetti({ particleCount: 100, spread: 70 });
+            gameContainer.innerHTML = `<div class="feedback correct">⚡ CORRECT! P${engine.currentPlayerIndex + 1} LOGIC VERIFIED!</div>`;
         } else {
             soundEngine.playWrong();
-            gameContainer.innerHTML = `<div class="feedback wrong">❌ LOGIC ERROR! NEXT PLAYER...</div>`;
-            gameContainer.classList.add('shake');
-            setTimeout(() => gameContainer.classList.remove('shake'), 500);
+            gameContainer.innerHTML = `<div class="feedback wrong">❌ ERROR! WRONG PATTERN</div>`;
         }
 
         engine.nextTurn();
-
-        // ১.৫ সেকেন্ড পর নতুন প্যাটার্ন (যদি সময় থাকে)
-        setTimeout(() => {
-            if (remainingTime > 0 || engine.isPaid) {
-                initGame();
-            } else {
-                showPaywall();
-            }
-        }, 1500);
+        setTimeout(initGame, 1500);
     }
 
-    // শুরুতে প্লেয়ার সিলেকশন মেনু দেখানো
+    function showPaywall() {
+        gameContainer.innerHTML = `
+            <div class="paywall-box" style="text-align:center;">
+                <h2 style="color:#ff4d4d;">LIMIT EXPIRED!</h2>
+                <p>আপনার ৫ মিনিটের ফ্রি এক্সেস শেষ হয়েছে।</p>
+                <button class="select-btn" onclick="window.open('https://wa.me/8801303680618')">অ্যাক্টিভেশন কি (Key) সংগ্রহ করুন</button>
+            </div>
+        `;
+    }
+
     showPlayerSelection();
 });
