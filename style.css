@@ -1,28 +1,5 @@
-/* OMEGA AI - Immersive UI Upgrade V15.6 */
-/* SVG & Logo Centering */
-.logo-preview {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px 0;
-}
-
-header {
-    display: flex;
-    flex-direction: column; /* ছোট স্ক্রিনে যাতে লোগো এবং টাইমার উপরে নিচে থাকে */
-    align-items: center;
-    gap: 15px;
-    padding: 20px 0;
-}
-
-@media (min-width: 768px) {
-    header {
-        flex-direction: row;
-        justify-content: space-between;
-        padding: 25px 8%;
-    }
-}
+/* OMEGA AI - Immersive UI Master V15.7 */
+/* 1. Global Reset & Variables */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -48,28 +25,75 @@ body {
     overflow-x: hidden;
 }
 
-/* Header: Balanced Spacing */
+/* 2. Header & Logo (Mobile-First Design) */
 header {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column; /* মোবাইলে সব সেন্টার হবে */
     align-items: center;
-    padding: 25px 8%;
+    gap: 15px;
+    padding: 20px 5%;
     border-bottom: 1px solid var(--border);
     background: rgba(10, 12, 16, 0.98);
 }
 
-.logo { font-weight: 900; color: var(--neon-blue); font-size: 1.4rem; }
+.logo-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
 
-/* Timer UI: High-Efficiency HUD */
+.logo { 
+    font-weight: 900; 
+    color: var(--neon-blue); 
+    font-size: 1.4rem;
+    margin-bottom: 10px;
+}
+
+/* SVG Centering Fix */
+.logo-preview {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.logo-preview img {
+    max-width: 180px; /* লোগোর সাইজ অপ্টিমাইজড */
+    height: auto;
+}
+
+nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Desktop Styles (768px+) */
+@media (min-width: 768px) {
+    header {
+        flex-direction: row; /* ডেক্সটপে দুই পাশে চলে যাবে */
+        justify-content: space-between;
+        padding: 25px 8%;
+    }
+    .logo-area {
+        flex-direction: row;
+        gap: 20px;
+    }
+    .logo { margin-bottom: 0; }
+}
+
+/* 3. Timer UI: High-Efficiency HUD */
 #timer-ui {
-    margin-left: 20px;
     padding: 8px 20px;
     background: rgba(0, 242, 255, 0.05);
     border-radius: 20px;
     font-weight: bold;
     color: var(--neon-blue);
     border: 1px solid var(--neon-blue);
-    min-width: 140px;
+    min-width: 150px;
     text-align: center;
     transition: all 0.3s ease;
 }
@@ -77,11 +101,11 @@ header {
 #timer-ui.low-time {
     color: var(--alert);
     border-color: var(--alert);
-    box-shadow: 0 0 10px rgba(255, 77, 77, 0.3);
+    box-shadow: 0 0 15px rgba(255, 77, 77, 0.4);
     animation: pulse 1s infinite;
 }
 
-/* Main Container: Prominent & Centered */
+/* 4. Main Container & Game Card */
 #game-container {
     flex-grow: 1;
     display: flex;
@@ -101,23 +125,23 @@ header {
     width: 95%;
     max-width: 800px;
     text-align: center;
-    transition: 0.4s;
 }
 
 .pattern-box { 
-    font-size: clamp(2rem, 5vw, 4rem);
+    font-size: clamp(1.8rem, 5vw, 3.5rem);
     margin-bottom: 40px; 
     font-weight: 700;
 }
 
 .num { color: #fff; }
+.arrow { color: #8b949e; padding: 0 10px; }
 .target { color: var(--neon-blue); border-bottom: 4px solid var(--neon-blue); }
 
-/* Options: High-Visibility Buttons */
+/* 5. Buttons & Interactive Elements */
 .options-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+    gap: 15px;
     width: 100%;
 }
 
@@ -125,65 +149,34 @@ header {
     background: transparent;
     border: 1px solid var(--border);
     color: white;
-    padding: 20px;
-    font-size: 1.3rem;
+    padding: 18px;
+    font-size: 1.2rem;
     cursor: pointer;
-    transition: 0.3s;
+    transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     border-radius: 10px;
 }
 
 .option-btn:hover {
     background: var(--neon-blue);
     color: #000;
-    box-shadow: 0 0 20px rgba(0, 242, 255, 0.5);
-    transform: scale(1.02);
+    box-shadow: 0 0 25px rgba(0, 242, 255, 0.6);
+    transform: scale(1.05);
 }
 
-/* Footer & Other UI Elements */
+/* 6. Footer & Feedback */
 footer {
-    padding: 40px 20px;
+    padding: 30px 20px;
     text-align: center;
     border-top: 1px solid var(--border);
     background: var(--dark-bg);
 }
 
-.footer-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-}
-
-#upgrade-btn {
-    background: white;
-    color: black;
-    border: none;
-    padding: 12px 24px;
-    font-weight: bold;
-    cursor: pointer;
-    border-radius: 5px;
-    transition: 0.3s;
-}
-
-#upgrade-btn:hover {
-    background: var(--neon-blue);
-}
-
-.turn-indicator {
-    font-size: 1.4rem;
-    margin-bottom: 25px;
-    color: #8b949e;
-    text-transform: uppercase;
-    letter-spacing: 4px;
-}
-
-.p-score.active {
-    color: var(--neon-blue);
-    border-bottom: 2px solid var(--neon-blue);
-}
+.feedback { font-size: 1.3rem; font-weight: bold; margin-bottom: 20px; }
+.feedback.correct { color: var(--neon-blue); }
+.feedback.wrong { color: var(--alert); }
 
 @keyframes pulse {
     0% { opacity: 1; }
-    50% { opacity: 0.7; }
+    50% { opacity: 0.6; }
     100% { opacity: 1; }
 }
