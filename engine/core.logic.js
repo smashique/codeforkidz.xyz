@@ -1,6 +1,6 @@
 /**
- * OMEGA AI - Master Logic Engine V15.9
- * Features: Timer Logic, Multi-Player, Floating Point Fix
+ * OMEGA AI - Master Logic Engine V16.0
+ * Features: Timer Logic, Multi-Player, Gumroad Subscription Validation
  */
 class GameEngine {
     constructor() {
@@ -8,24 +8,51 @@ class GameEngine {
         this.operators = ['+'];
         this.players = [];
         this.currentPlayerIndex = 0;
+        
+        // লিমিটেশন কনফিগ
         this.isPaid = false; 
-        this.FREE_TIME_LIMIT = 300; // ৫ মিনিট
+        this.FREE_TIME_LIMIT = 300; // ৫ মিনিট = ৩০০ সেকেন্ড
+        
+        // ইঞ্জিন লোড হওয়ার সময় প্রিমিয়াম স্ট্যাটাস চেক করা
+        this.checkPremiumStatus();
+    }
+
+    // ব্রাউজার স্টোরেজ থেকে প্রিমিয়াম স্ট্যাটাস রিট্রিভ করা
+    checkPremiumStatus() {
+        const status = localStorage.getItem('math_ai_premium');
+        if (status === 'true') {
+            this.isPaid = true;
+        }
+    }
+
+    // গুমরোড লাইসেন্স কী ভ্যালিডেশন
+    validateLicenseKey(userKey) {
+        // এই কী-টি আপনার গুমরোড প্রোডাক্ট ড্যাশবোর্ডে সেট করে দেবেন
+        const PREMIUM_KEY = "MATH-AI-PRO-2025"; 
+        
+        if (userKey === PREMIUM_KEY) {
+            this.isPaid = true;
+            localStorage.setItem('math_ai_premium', 'true');
+            return true;
+        }
+        return false;
     }
 
     // টাইম ট্র্যাকিং লজিক
     getUsedTime() {
+        if (this.isPaid) return 0; // পেইড ইউজারদের জন্য টাইম ০
         const today = new Date().toDateString();
         const data = JSON.parse(localStorage.getItem('math_ai_time')) || { date: today, used: 0 };
         return data.date !== today ? 0 : data.used;
     }
 
     saveTime(seconds) {
-        if (this.isPaid) return;
+        if (this.isPaid) return; // পেইড হলে সেভ করার দরকার নেই
         const today = new Date().toDateString();
         localStorage.setItem('math_ai_time', JSON.stringify({ date: today, used: seconds }));
     }
 
-    // মাল্টিপ্লেয়ার সেটআপ (এটি মিসিং ছিল বলে এরর আসছিল)
+    // মাল্টিপ্লেয়ার সেটআপ
     initPlayers(count) {
         this.players = Array.from({ length: count }, (_, i) => ({ id: i + 1, score: 0 }));
         this.currentPlayerIndex = 0;
@@ -36,6 +63,7 @@ class GameEngine {
     }
 
     generatePattern() {
+        // লেভেল অনুযায়ী অপারেটর আনলক
         if (this.level > 5 && !this.operators.includes('-')) this.operators.push('-');
         if (this.level > 15 && !this.operators.includes('*')) this.operators.push('*');
         
@@ -50,7 +78,12 @@ class GameEngine {
         }
 
         const correctAnswer = this.calculateNext(sequence[sequence.length - 1], step, operator);
-        return { sequence, options: this.generateOptions(correctAnswer), correctAnswer, currentPlayer: this.players[this.currentPlayerIndex] };
+        return { 
+            sequence, 
+            options: this.generateOptions(correctAnswer), 
+            correctAnswer, 
+            currentPlayer: this.players[this.currentPlayerIndex] 
+        };
     }
 
     calculateNext(current, step, op) {
@@ -76,4 +109,5 @@ class GameEngine {
         return false;
     }
 }
+
 export const engine = new GameEngine();
