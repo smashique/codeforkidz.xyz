@@ -1,10 +1,11 @@
 import { engine } from '../engine/core.logic.js';
+import { soundEngine } from '../engine/sound.logic.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const gameContainer = document.getElementById('game-container');
     const scoreDisplay = document.getElementById('player-score');
 
-    // ধাপ ১: প্লেয়ার সংখ্যা নির্বাচন করার মেনু
+    // ধাপ ১: প্লেয়ার সংখ্যা নির্বাচন করার মেনু
     function showPlayerSelection() {
         gameContainer.innerHTML = `
             <div class="setup-box">
@@ -21,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.select-btn').forEach(btn => {
             btn.onclick = () => {
                 const count = parseInt(btn.dataset.players);
-                engine.initPlayers(count); // ইঞ্জিনকে প্লেয়ার সংখ্যা জানানো
+                engine.initPlayers(count); 
                 initGame();
             };
         });
@@ -33,7 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderPattern(data) {
-        // মাল্টিপ্লেয়ার স্কোরবোর্ড আপডেট
         scoreDisplay.innerHTML = engine.players.map(p => 
             `<span class="p-score ${p.id - 1 === engine.currentPlayerIndex ? 'active' : ''}">
                 P${p.id}: ${p.score}
@@ -63,16 +63,23 @@ document.addEventListener('DOMContentLoaded', () => {
         const isCorrect = engine.validateAnswer(userAnswer, correctAnswer);
         
         if (isCorrect) {
+            // ওমেগা সাউন্ড কল: সঠিক
+            soundEngine.playCorrect();
+            
             if (typeof confetti === 'function') confetti({ particleCount: 150, spread: 70 });
             gameContainer.innerHTML = `<div class="feedback correct">⚡ CORRECT! PLAYER ${engine.currentPlayerIndex + 1} SCORED!</div>`;
         } else {
+            // ওমেগা সাউন্ড কল: ভুল
+            soundEngine.playWrong();
+            
             gameContainer.innerHTML = `<div class="feedback wrong">❌ LOGIC ERROR! NEXT PLAYER...</div>`;
+            gameContainer.classList.add('shake');
+            setTimeout(() => gameContainer.classList.remove('shake'), 500);
         }
 
         engine.nextTurn();
         setTimeout(initGame, 1500);
     }
 
-    // গেম শুরু: প্রথমে সিলেকশন স্ক্রিন দেখাবে
     showPlayerSelection();
 });
