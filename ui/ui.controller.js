@@ -2,49 +2,50 @@ import { engine } from '../engine/core.logic.js';
 import { soundEngine } from '../engine/sound.logic.js';
 
 let gameTimer = null;
-let currentRemainingTime = 60; // Default Adrenaline Timer duration
-let discoveryData = { age: '4-5', theme: 'space', players: 1 };
+let currentDiscovery = { age: '4-5', mode: 'Addition', theme: 'Space' };
 
 document.addEventListener('DOMContentLoaded', () => {
     const gameContainer = document.getElementById('game-container');
     const headerNav = document.querySelector('nav');
-    
-    // ১. DISCOVERY PHASE: Age, Operation & Theme Selection
-    function showDiscoveryPhase() {
+
+    // PHASE 1: Discovery Menu (Age, Operation & Theme Selection)
+    function showDiscoveryMenu() {
         gameContainer.innerHTML = `
             <div class="setup-box">
-                <h2>PHASE 1: DISCOVERY</h2>
+                <h2 style="color:var(--neon-blue)">MISSION DISCOVERY</h2>
                 <div class="discovery-grid">
-                    <label>Target Age Group:</label>
+                    <label>Pilot Age:</label>
                     <select id="age-group">
-                        <option value="4-5">Age 4-5 (Early Math)</option>
-                        <option value="6-7">Age 6-7 (Basic Ops)</option>
-                        <option value="8-9">Age 8-9 (Logical Logic)</option>
-                        <option value="10-11">Age 10-11 (Algorithm Mastery)</option>
-                        <option value="12+">Age 12+ (Advanced Algebra)</option>
+                        ${Object.keys(engine.gameModules).map(age => `<option value="${age}">Age ${age}</option>`).join('')}
                     </select>
 
-                    <label>Multiplayer Identity:</label>
-                    <select id="player-count">
-                        <option value="1">1 Player</option>
-                        <option value="2">2 Players</option>
-                        <option value="3">3 Players</option>
-                        <option value="4">4 Players</option>
-                    </select>
+                    <label>Mission Type:</label>
+                    <select id="op-type">
+                        </select>
 
-                    <label>Choose Game World:</label>
+                    <label>Environment Theme:</label>
                     <div class="theme-selection">
-                        <button class="theme-btn" data-theme="jungle">🌿 Jungle</button>
-                        <button class="theme-btn active" data-theme="space">🚀 Space</button>
-                        <button class="theme-btn" data-theme="underwater">🧜‍♂️ Water</button>
-                        <button class="theme-btn" data-theme="candy">🍬 Candy</button>
+                        <button class="theme-btn" data-theme="Jungle">Jungle 🌿</button>
+                        <button class="theme-btn active" data-theme="Space">Space 🚀</button>
+                        <button class="theme-btn" data-theme="Underwater">Water 🧜‍♂️</button>
+                        <button class="theme-btn" data-theme="Candy">Candy 🍬</button>
                     </div>
                 </div>
                 <button id="launch-mission" class="select-btn">LAUNCH MISSION</button>
             </div>
         `;
 
-        // Theme Button Selection Logic
+        const ageSelect = document.getElementById('age-group');
+        const opSelect = document.getElementById('op-type');
+
+        const updateOps = () => {
+            const ops = engine.gameModules[ageSelect.value];
+            opSelect.innerHTML = ops.map(o => `<option value="${o}">${o}</option>`).join('');
+        };
+
+        ageSelect.onchange = updateOps;
+        updateOps(); // Initial load
+
         document.querySelectorAll('.theme-btn').forEach(btn => {
             btn.onclick = () => {
                 document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
@@ -53,30 +54,33 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         document.getElementById('launch-mission').onclick = () => {
-            discoveryData.age = document.getElementById('age-group').value;
-            discoveryData.players = parseInt(document.getElementById('player-count').value);
-            discoveryData.theme = document.querySelector('.theme-btn.active').dataset.theme;
-
-            // Apply Thematic UI
-            document.body.className = `theme-${discoveryData.theme}`;
+            currentDiscovery.age = ageSelect.value;
+            currentDiscovery.mode = opSelect.value;
+            currentDiscovery.theme = document.querySelector('.theme-btn.active').dataset.theme;
+            
             soundEngine.init();
-            engine.initPlayers(discoveryData.players);
+            engine.initPlayers(1); // Default 1 player, can be dynamic
+            applyInfiniteTheme();
             initGame();
         };
     }
 
-    // ২. ADRENALINE TIMER: Countdown with Progress Bar
-    function startAdrenalineHUD() {
+    // PHASE 2: Infinite UI & Adrenaline Logic
+    function applyInfiniteTheme() {
+        const config = engine.generateInfiniteTheme(currentDiscovery.theme);
+        document.body.className = `theme-${config.base.toLowerCase()}`;
+        document.body.style.filter = `hue-rotate(${config.hue}deg) saturate(${config.saturation}%)`;
+        console.log(`OMEGA AI: Unique UI Generated [ID: ${config.id}]`);
+    }
+
+    function startAdrenalineTimer() {
         if (gameTimer) clearInterval(gameTimer);
-        let timeLeft = 30; // 30 second adrenaline rush
+        let timeLeft = 30;
         
-        // Timer UI creation
         headerNav.innerHTML = `
-            <div id="player-score">P1: 0</div>
-            <div id="timer-hud">
-                <div id="progress-bar-container">
-                    <div id="timer-fill"></div>
-                </div>
+            <div id="player-score" style="color:var(--neon-blue)">Score: 0</div>
+            <div id="timer-hud" style="width:200px">
+                <div id="progress-bar-container"><div id="timer-fill"></div></div>
                 <span id="timer-text">30s</span>
             </div>
         `;
@@ -84,102 +88,70 @@ document.addEventListener('DOMContentLoaded', () => {
         gameTimer = setInterval(() => {
             timeLeft--;
             const fill = document.getElementById('timer-fill');
-            const text = document.getElementById('timer-text');
             const card = document.querySelector('.algorithm-card');
             
             if (fill) fill.style.width = `${(timeLeft / 30) * 100}%`;
-            if (text) text.innerText = `${timeLeft}s`;
+            if (document.getElementById('timer-text')) document.getElementById('timer-text').innerText = timeLeft + 's';
 
-            // Adrenaline Rush: 5-second pulse
-            if (timeLeft <= 5) {
-                if (card) card.classList.add('shake-urgent');
-                if (text) text.style.color = 'red';
-                // soundEngine.playTick(); 
-            }
-
+            if (timeLeft <= 5 && card) card.classList.add('shake-urgent');
+            
             if (timeLeft <= 0) {
                 clearInterval(gameTimer);
-                handleFailure();
+                initGame(); // Time out moves to next
             }
         }, 1000);
     }
 
     function initGame() {
-        if (!engine.isPaid && engine.getUsedTime() >= engine.FREE_TIME_LIMIT) {
-            showPaywall();
-            return;
-        }
-        startAdrenalineHUD();
-        const data = engine.generatePattern(discoveryData.age);
-        renderPattern(data);
+        startAdrenalineTimer();
+        const problem = engine.createMathProblem(currentDiscovery.mode);
+        renderGame(problem);
     }
 
-    function renderPattern(data) {
-        const scoreDisplay = document.getElementById('player-score');
-        scoreDisplay.innerHTML = engine.players.map(p => 
-            `<span class="p-score ${p.id - 1 === engine.currentPlayerIndex ? 'active' : ''}" style="color:${p.color}">
-                P${p.id}: ${p.score}
-            </span>`
-        ).join(' | ');
-
+    function renderGame(data) {
         gameContainer.innerHTML = `
-            <div class="turn-indicator">PLAYER ${data.currentPlayer.id}'S TURN</div>
             <div class="algorithm-card">
-                <div class="pattern-box">
-                    ${data.sequence.map(n => `<span class="num">${n}</span>`).join(' → ')} → <span class="target">?</span>
-                </div>
+                <div id="math-display" class="pattern-box"></div>
                 <div class="options-grid">
-                    ${data.options.map(opt => `<button class="option-btn" data-value="${opt}">${opt}</button>`).join('')}
+                    ${data.options.map(opt => `<button class="option-btn" data-val="${opt}">${opt}</button>`).join('')}
                 </div>
                 <div class="social-actions">
-                    <button onclick="window.printReportCard()" class="util-btn">📄 Report</button>
-                    <button onclick="window.shareVictory()" class="util-btn">🔗 Share</button>
+                    <button class="util-btn" onclick="window.printReport()">📄 Report</button>
+                    <button class="util-btn" onclick="window.shareWin()">🔗 Share</button>
                 </div>
             </div>
         `;
 
+        // LaTeX Rendering for Algebra
+        const display = document.getElementById('math-display');
+        if (data.question.includes('$')) {
+            const formula = data.question.replace(/\$/g, '');
+            katex.render(formula, display, { throwOnError: false });
+        } else {
+            display.innerText = data.question;
+        }
+
         document.querySelectorAll('.option-btn').forEach(btn => {
-            btn.onclick = () => handleSubmission(btn.dataset.value, data.correctAnswer);
+            btn.onclick = () => {
+                if (btn.dataset.val == data.answer) {
+                    soundEngine.playCorrect();
+                    if (typeof confetti === 'function') confetti();
+                    engine.players[0].score += 10;
+                } else {
+                    soundEngine.playWrong();
+                }
+                setTimeout(initGame, 1000);
+            };
         });
     }
 
-    function handleSubmission(userAnswer, correctAnswer) {
-        const isCorrect = engine.validateAnswer(userAnswer, correctAnswer);
-        
-        if (isCorrect) {
-            soundEngine.playCorrect();
-            if (typeof confetti === 'function') confetti({ particleCount: 150, spread: 100 });
-            gameContainer.innerHTML = `<div class="feedback correct">⚡ EXCELLENT LOGIC! LEVEL UP!</div>`;
-        } else {
-            soundEngine.playWrong();
-            gameContainer.innerHTML = `<div class="feedback wrong">❌ CALIBRATING... TRY AGAIN!</div>`;
-        }
-
-        engine.nextTurn();
-        setTimeout(initGame, 1500);
-    }
-
-    // UTILITY: Print & Share
-    window.printReportCard = () => {
-        const stats = engine.players.map(p => `Player ${p.id}: ${p.score}`).join('\n');
+    // Utility Functions
+    window.printReport = () => {
+        const score = engine.players[0].score;
         const win = window.open('', 'PRINT', 'height=400,width=600');
-        win.document.write(`<h1>MathGameAI Victory Report</h1><pre>${stats}</pre>`);
+        win.document.write(`<h1>MathGameAI Report</h1><p>Age Group: ${currentDiscovery.age}</p><p>Final Score: ${score}</p>`);
         win.print();
     };
 
-    window.shareVictory = () => {
-        const text = `I just mastered AI Algorithms on MathGameAI.xyz! Current Score: ${engine.players[0].score}`;
-        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`);
-    };
-
-    function showPaywall() {
-        gameContainer.innerHTML = `
-            <div class="paywall-box">
-                <h2>TRIAL ENDED</h2>
-                <button class="select-btn" onclick="window.open('https://mathgameai.gumroad.com/l/MathGameAIPro')">Get Unlimited Patterns ($2.99)</button>
-            </div>
-        `;
-    }
-
-    showDiscoveryPhase();
+    showDiscoveryMenu();
 });
