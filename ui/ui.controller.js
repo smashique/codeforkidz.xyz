@@ -1,35 +1,39 @@
-// ui.controller.js — UI Handler
+// ui.controller.js — UI Handler (FIXED)
 
+document.addEventListener("DOMContentLoaded", () => {
 
-const UIController = (() => {
-  const container = document.getElementById("game-container");
+  const UIController = (() => {
+    const container = document.getElementById("game-container");
 
-  function renderGame() {
-    const data = GameEngine.generatePattern();
+    function renderGame() {
+      const data = GameEngine.generatePattern();
 
-    container.innerHTML = `
-      <h2>Level ${GameEngine.getLevel()}</h2>
-      <p><strong>${data.question}</strong></p>
-      <div>
-        ${data.options.map(opt =>
-          `<button onclick="UIController.submit(${opt})">${opt}</button>`
-        ).join("")}
-      </div>
-      <p id="feedback"></p>
-    `;
-  }
-
-  function submit(value) {
-    const feedback = document.getElementById("feedback");
-    if (GameEngine.checkAnswer(value)) {
-      feedback.innerHTML = "🎉 Correct! Next Level...";
-      setTimeout(renderGame, 800);
-    } else {
-      feedback.innerHTML = "😅 Wrong! Try again.";
+      container.innerHTML = `
+        <h2>Level ${GameEngine.getLevel()}</h2>
+        <p><strong>${data.question}</strong></p>
+        <div>
+          ${data.options.map(opt =>
+            `<button onclick="UIController.submit(${opt})">${opt}</button>`
+          ).join("")}
+        </div>
+        <p id="feedback"></p>
+      `;
     }
-  }
 
-  return { renderGame, submit };
-})();
+    function submit(value) {
+      const feedback = document.getElementById("feedback");
+      if (GameEngine.checkAnswer(value)) {
+        feedback.innerHTML = "🎉 Correct! Next Level...";
+        setTimeout(renderGame, 800);
+      } else {
+        feedback.innerHTML = "😅 Wrong! Try again.";
+      }
+    }
 
-UIController.renderGame();
+    return { renderGame, submit };
+  })();
+
+  window.UIController = UIController;
+  UIController.renderGame();
+
+});
