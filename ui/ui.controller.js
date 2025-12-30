@@ -115,7 +115,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ৩. ফাইনাল পে-ওয়াল (গুমরোড + অ্যাক্টিভেশন)
     function showPaywall() {
-        const gumroadProductLink = "https://gumroad.com/l/your-actual-link"; 
+        // ওমেগা ইন্টিগ্রেশন: আপনার আসল গুমরোড লিঙ্ক এখানে যুক্ত করা হয়েছে
+        const gumroadProductLink = "https://mathgameai.gumroad.com/l/MathGameAIPro"; 
 
         gameContainer.innerHTML = `
             <div class="paywall-box" style="text-align:center;">
