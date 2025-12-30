@@ -37,3 +37,6 @@ document.addEventListener("DOMContentLoaded", () => {
   UIController.renderGame();
 
 });
+document.addEventListener("DOMContentLoaded", () => {
+  const container = document.getElementById("game-container");
+});
