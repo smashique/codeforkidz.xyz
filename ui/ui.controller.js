@@ -3,7 +3,29 @@ import { engine } from '../engine/core.logic.js';
 document.addEventListener('DOMContentLoaded', () => {
     const gameContainer = document.getElementById('game-container');
     const scoreDisplay = document.getElementById('player-score');
-    const levelDisplay = document.getElementById('game-level');
+
+    // ধাপ ১: প্লেয়ার সংখ্যা নির্বাচন করার মেনু
+    function showPlayerSelection() {
+        gameContainer.innerHTML = `
+            <div class="setup-box">
+                <h2>SELECT PLAYERS</h2>
+                <div class="selection-grid">
+                    <button class="select-btn" data-players="1">1 Player</button>
+                    <button class="select-btn" data-players="2">2 Players</button>
+                    <button class="select-btn" data-players="3">3 Players</button>
+                    <button class="select-btn" data-players="4">4 Players</button>
+                </div>
+            </div>
+        `;
+
+        document.querySelectorAll('.select-btn').forEach(btn => {
+            btn.onclick = () => {
+                const count = parseInt(btn.dataset.players);
+                engine.initPlayers(count); // ইঞ্জিনকে প্লেয়ার সংখ্যা জানানো
+                initGame();
+            };
+        });
+    }
 
     function initGame() {
         const data = engine.generatePattern();
@@ -11,14 +33,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderPattern(data) {
-        scoreDisplay.innerText = `Score: ${engine.score}`;
-        levelDisplay.innerText = `Level: ${engine.level}`;
+        // মাল্টিপ্লেয়ার স্কোরবোর্ড আপডেট
+        scoreDisplay.innerHTML = engine.players.map(p => 
+            `<span class="p-score ${p.id - 1 === engine.currentPlayerIndex ? 'active' : ''}">
+                P${p.id}: ${p.score}
+            </span>`
+        ).join(' | ');
 
         gameContainer.innerHTML = `
+            <div class="turn-indicator">PLAYER ${data.currentPlayer.id}'S TURN</div>
             <div class="algorithm-card">
                 <div class="pattern-box">
-                    ${data.sequence.map(num => `<span class="num">${num}</span>`).join(' <span class="arrow">→</span> ')}
-                    <span class="num target">?</span>
+                    ${data.sequence.join(' → ')} → <span class="target">?</span>
                 </div>
                 <div class="options-grid">
                     ${data.options.map(opt => `
@@ -28,44 +54,25 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
 
-        // বাটন ক্লিকে উত্তর চেক করা
         document.querySelectorAll('.option-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const selected = e.target.getAttribute('data-value');
-                handleSubmission(selected, data.correctAnswer);
-            });
+            btn.onclick = () => handleSubmission(btn.dataset.value, data.correctAnswer);
         });
     }
 
     function handleSubmission(userAnswer, correctAnswer) {
-    const isCorrect = engine.validateAnswer(userAnswer, correctAnswer);
-    
-    if (isCorrect) {
-        // ১. কনফেটি ইফেক্ট ট্রিগার
-        confetti({
-            particleCount: 150,
-            spread: 70,
-            origin: { y: 0.6 },
-            colors: ['#00f2ff', '#ffffff', '#238636']
-        });
-
-        // ২. ফিডব্যাক মেসেজ
-        gameContainer.innerHTML = `
-            <div class="feedback correct">
-                <h2 style="color: #00f2ff;">⚡ LOGIC VERIFIED!</h2>
-                <p>OMEGA Score: ${engine.score}</p>
-            </div>
-        `;
+        const isCorrect = engine.validateAnswer(userAnswer, correctAnswer);
         
-        setTimeout(initGame, 1200); 
-    } else {
-        gameContainer.classList.add('shake');
-        setTimeout(() => gameContainer.classList.remove('shake'), 500);
-        // ভুল হলে রেড ভাইব
-        const originalBg = gameContainer.style.borderColor;
-        gameContainer.style.borderColor = 'red';
-        setTimeout(() => gameContainer.style.borderColor = originalBg, 500);
+        if (isCorrect) {
+            if (typeof confetti === 'function') confetti({ particleCount: 150, spread: 70 });
+            gameContainer.innerHTML = `<div class="feedback correct">⚡ CORRECT! PLAYER ${engine.currentPlayerIndex + 1} SCORED!</div>`;
+        } else {
+            gameContainer.innerHTML = `<div class="feedback wrong">❌ LOGIC ERROR! NEXT PLAYER...</div>`;
+        }
+
+        engine.nextTurn();
+        setTimeout(initGame, 1500);
     }
-}
-    initGame();
+
+    // গেম শুরু: প্রথমে সিলেকশন স্ক্রিন দেখাবে
+    showPlayerSelection();
 });
