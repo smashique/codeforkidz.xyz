@@ -1,9 +1,11 @@
-// ui.controller.js — UI Handler (FIXED)
-
 document.addEventListener("DOMContentLoaded", () => {
 
   const UIController = (() => {
     const container = document.getElementById("game-container");
+    if (!container) {
+      console.error("game-container not found");
+      return;
+    }
 
     function renderGame() {
       const data = GameEngine.generatePattern();
@@ -36,7 +38,4 @@ document.addEventListener("DOMContentLoaded", () => {
   window.UIController = UIController;
   UIController.renderGame();
 
-});
-document.addEventListener("DOMContentLoaded", () => {
-  const container = document.getElementById("game-container");
 });
