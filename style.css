@@ -1,106 +1,50 @@
-/* OMEGA AI - CODEFORKIDZ GEOMETRIC V22.0 */
-/* 1. Global Reset & Multiverse Variables */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
+/* OMEGA AI - CODEFORKIDZ GEOMETRIC HUD V22.1 */
 :root {
     --primary-glow: #00f2ff;
-    --accent-glow: #7000ff;
-    --glass-bg: rgba(15, 15, 27, 0.85);
-    --glass-border: rgba(255, 255, 255, 0.12);
-    --dark-bg: #0a0a0f;
-    --shape-neon: #ff00ff;
+    --glass-bg: rgba(15, 15, 27, 0.9);
+    --glass-border: rgba(255, 255, 255, 0.1);
 }
 
 body {
-    background: radial-gradient(circle at center, #1a1a2e 0%, var(--dark-bg) 100%);
-    color: white;
-    font-family: 'Inter', sans-serif;
+    background: #05050a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden; /* গ্রাফিক্যাল গেমের জন্য স্ক্রল বন্ধ রাখা ভালো */
+    margin: 0;
 }
 
-/* 2. GEOMETRIC CANVAS AREA: টেক্সটের বদলে এখানে গ্রাফিক্স থাকবে */
-#geometry-canvas {
-    width: 100%;
-    height: 350px;
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 20px;
-    border: 1px dashed var(--primary-glow);
-    box-shadow: inset 0 0 30px rgba(0, 242, 255, 0.1);
-    margin: 20px 0;
-    cursor: crosshair; /* গেমিং ফিল দেওয়ার জন্য */
-}
-
-/* 3. UPDATED MISSION CARD: গ্রাফিক্সের জন্য অপ্টিমাইজড */
-.setup-box, .algorithm-card {
-    background: var(--glass-bg);
-    backdrop-filter: blur(25px);
-    border: 1px solid var(--glass-border);
-    border-radius: 30px;
-    padding: 40px;
+#game-container {
+    position: relative;
     width: 95%;
-    max-width: 750px;
-    box-shadow: 0 40px 100px rgba(0,0,0,0.9), 
-                inset 0 0 20px rgba(0, 242, 255, 0.05);
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-/* 4. GEOMETRICAL OPTIONS: বাটনগুলো এখন আইকনিক/গ্রাফিক্যাল */
-.options-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 15px;
-    width: 100%;
-}
-
-.option-btn {
-    background: rgba(255, 255, 255, 0.03);
+    max-width: 800px;
+    background: var(--glass-bg);
+    border-radius: 30px;
     border: 1px solid var(--glass-border);
-    border-radius: 18px;
-    padding: 20px;
-    transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100px; /* গ্রাফিক্যাল সিম্বল বা ছোট ক্যানভাসের জন্য */
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 0 50px rgba(0,0,0,0.5);
 }
 
-.option-btn:hover {
-    background: var(--primary-glow);
-    transform: scale(1.05) translateY(-5px);
-    box-shadow: 0 0 40px var(--primary-glow);
+#geometry-canvas {
+    background: rgba(0,0,0,0.2);
+    border-radius: 20px;
+    border: 1px solid rgba(0, 242, 255, 0.2);
+    margin-bottom: 20px;
 }
 
-/* 5. GEOMETRIC ANIMATIONS: আকৃতিগুলো যখন নড়বে */
-@keyframes neonPulse {
-    0% { filter: drop-shadow(0 0 5px var(--shape-neon)); }
-    50% { filter: drop-shadow(0 0 20px var(--shape-neon)); }
-    100% { filter: drop-shadow(0 0 5px var(--shape-neon)); }
+/* বাটনগুলোকে আধুনিক গেমিং স্টাইল দেওয়া */
+.launch-btn, .option-btn {
+    background: linear-gradient(90deg, #00f2ff, #7000ff);
+    color: black;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: 0.3s;
 }
 
-.geometric-shape {
-    animation: neonPulse 2s infinite ease-in-out;
-}
-
-/* 6. HUD (HEART OF DASHBOARD) */
-.hud-bar {
-    width: 100%;
-    position: fixed;
-    top: 0;
-    display: flex;
-    justify-content: space-between;
-    padding: 20px 5%;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(10px);
-    z-index: 1000;
-}
+.launch-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px #00f2ff; }
