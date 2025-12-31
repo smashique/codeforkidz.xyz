@@ -2,10 +2,8 @@ import { engine } from '../engine/core.logic.js';
 import { soundEngine } from '../engine/sound.logic.js';
 
 let canvas, ctx, currentMission;
-let gameTimer = null;
 
 document.addEventListener('DOMContentLoaded', () => {
-    // প্রাথমিক হেড সেটআপ
     updateHUD();
     showDiscoveryMenu();
 });
@@ -16,20 +14,19 @@ document.addEventListener('DOMContentLoaded', () => {
 function showDiscoveryMenu() {
     const container = document.getElementById('game-container');
     container.innerHTML = `
-        <div class="setup-box animate__animated animate__zoomIn">
+        <div class="setup-box animate__animated animate__fadeIn">
             <h1 class="glitch" data-text="GEOMETRIC CONTROL">GEOMETRIC CONTROL</h1>
-            <p style="color: #8b949e; margin-bottom: 30px;">Master logic through visual patterns.</p>
+            <p style="color: #8b949e; margin-bottom: 25px;">Select your pilot experience level.</p>
             
-            <div class="selection-card">
-                <span>Select Pilot Experience</span>
+            <div class="selection-card" style="margin-bottom:20px">
                 <select id="age-group" class="modern-select">
-                    <option value="4-5">Junior (Age 4-5)</option>
+                    <option value="4-5">Junior Pilot (Age 4-5)</option>
                     <option value="8-9">Commander (Age 8-9)</option>
-                    <option value="12+">Expert (Age 12+)</option>
+                    <option value="12+">Quantum Expert (Age 12+)</option>
                 </select>
             </div>
             
-            <button id="launch-btn" class="launch-btn" style="width:100%; margin-top:20px;">INITIATE MISSION</button>
+            <button id="launch-btn" class="launch-btn" style="width:100%">INITIATE LAUNCH</button>
         </div>
     `;
 
@@ -41,18 +38,17 @@ function showDiscoveryMenu() {
 }
 
 /**
- * ২. মিশন শুরু করার লজিক
+ * ২. জ্যামিতিক মিশন শুরু
  */
 function startGeometricMission() {
     const container = document.getElementById('game-container');
     
-    // লেভেল ১০ লক চেক (সাবস্ক্রিপশন লজিক)
+    // লেভেল ১০ লক (সাবস্ক্রিপশন চেক)
     if (engine.level > 10 && !engine.isPaid) {
         showPaywall();
         return;
     }
 
-    // গেম স্ক্রিন লেআউট তৈরি
     container.innerHTML = `
         <div class="algorithm-card">
             <div class="level-badge">MISSION LEVEL ${engine.level}</div>
@@ -61,23 +57,22 @@ function startGeometricMission() {
         </div>
     `;
 
-    // ক্যানভাস রেফারেন্স আপডেট
     canvas = document.getElementById('geometry-canvas');
     if (canvas) ctx = canvas.getContext('2d');
 
-    // নতুন জ্যামিতিক মিশন তৈরি
     currentMission = engine.createGeometricMission();
     
-    // গ্রাফিক্স রেন্ডার করা
+    // মেইন ক্যানভাসে বড় আকৃতি আঁকা
     drawGeometry(ctx, currentMission.target, 80, currentMission.color, currentMission.rotation);
     renderOptions();
     updateHUD();
 }
 
 /**
- * ৩. জ্যামিতিক আকৃতি ড্রয়িং ইঞ্জিন
+ * ৩. জ্যামিতিক ড্রয়িং ইঞ্জিন (মাস্টার ফাংশন)
  */
 function drawGeometry(context, shape, size, color, rotation = 0) {
+    if (!context) return;
     const x = context.canvas.width / 2;
     const y = context.canvas.height / 2;
 
@@ -88,8 +83,8 @@ function drawGeometry(context, shape, size, color, rotation = 0) {
     
     context.strokeStyle = color;
     context.lineWidth = 10;
-    context.lineJoin = "round";
-    context.shadowBlur = 30;
+    context.lineCap = "round";
+    context.shadowBlur = 25;
     context.shadowColor = color;
     
     context.beginPath();
@@ -102,9 +97,10 @@ function drawGeometry(context, shape, size, color, rotation = 0) {
         context.rect(-size, -size, size * 2, size * 2);
     } else if (shape === 'circle') {
         context.arc(0, 0, size, 0, Math.PI * 2);
-    } else if (shape === 'pentagon') {
-        for (let i = 0; i < 5; i++) {
-            const angle = (i * 2 * Math.PI) / 5 - Math.PI / 2;
+    } else if (shape === 'pentagon' || shape === 'hexagon') {
+        const sides = shape === 'pentagon' ? 5 : 6;
+        for (let i = 0; i < sides; i++) {
+            const angle = (i * 2 * Math.PI) / sides - Math.PI / 2;
             context.lineTo(size * Math.cos(angle), size * Math.sin(angle));
         }
         context.closePath();
@@ -114,19 +110,34 @@ function drawGeometry(context, shape, size, color, rotation = 0) {
 }
 
 /**
- * ৪. অপশন বাটন রেন্ডারার
+ * ৪. গ্রাফিক্যাল অপশন রেন্ডারার (বাটন আইকন সহ)
  */
 function renderOptions() {
     const grid = document.querySelector('.options-grid');
-    grid.innerHTML = currentMission.options.map(opt => `
-        <button class="option-btn" onclick="handleChoice('${opt}')">
-            ${opt.toUpperCase()}
-        </button>
-    `).join('');
+    grid.innerHTML = '';
+
+    currentMission.options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        
+        // ছোট ক্যানভাস তৈরি আইকনের জন্য
+        const iconCanvas = document.createElement('canvas');
+        iconCanvas.width = 80;
+        iconCanvas.height = 80;
+        const iconCtx = iconCanvas.getContext('2d');
+        
+        btn.appendChild(iconCanvas);
+        grid.appendChild(btn);
+        
+        // বাটনের ভেতরে ছোট সাদা আকৃতি আঁকা
+        drawGeometry(iconCtx, opt, 25, '#ffffff', 0);
+
+        btn.onclick = () => handleChoice(opt);
+    });
 }
 
 /**
- * ৫. ইউজার চয়েস হ্যান্ডলার
+ * ৫. চয়েস হ্যান্ডলার
  */
 window.handleChoice = (choice) => {
     if (choice === currentMission.target) {
@@ -136,36 +147,39 @@ window.handleChoice = (choice) => {
         setTimeout(startGeometricMission, 1000);
     } else {
         soundEngine.playWrong();
-        canvas.classList.add('fail-shake');
-        setTimeout(() => canvas.classList.remove('fail-shake'), 500);
+        if (canvas) {
+            canvas.classList.add('fail-shake');
+            setTimeout(() => canvas.classList.remove('fail-shake'), 500);
+        }
     }
 };
 
 /**
- * ৬. HUD (Heads-Up Display) আপডেট
+ * ৬. HUD এবং পে-ওয়াল
  */
 function updateHUD() {
     const nav = document.querySelector('nav');
     if (nav) {
         nav.innerHTML = `
-            <div id="player-score" class="score-hud">LEVEL PROGRESS: ${engine.level}/10</div>
+            <div class="score-hud">MISSION PROGRESS: ${engine.level}/10</div>
             <div id="timer-hud">
-                <div id="progress-bar-container"><div id="timer-fill" style="width:${(engine.level/10)*100}%"></div></div>
+                <div id="progress-bar-container">
+                    <div id="timer-fill" style="width:${Math.min((engine.level/10)*100, 100)}%"></div>
+                </div>
             </div>
         `;
     }
 }
 
-/**
- * ৭. পে-ওয়াল (Level 10 Lock)
- */
 function showPaywall() {
     const container = document.getElementById('game-container');
     container.innerHTML = `
         <div class="setup-box animate__animated animate__fadeInUp">
-            <h2 style="color:var(--primary-glow)">MISSION LOCKED! 🔒</h2>
-            <p>You've completed the free training. Upgrade to unlock 10,000+ unique geometric challenges.</p>
-            <a href="https://mathgameai.gumroad.com/l/MathGameAIPro" target="_blank" class="launch-btn" style="text-decoration:none; display:inline-block;">GET EXPLORER PASS - $2.99</a>
+            <h2 style="color:var(--primary-glow)">PRO ACCESS REQUIRED 🔒</h2>
+            <p>You've mastered the basic shapes! Upgrade now to unlock 10,000+ unique fractal logic missions.</p>
+            <a href="https://mathgameai.gumroad.com/l/MathGameAIPro" target="_blank" class="launch-btn" style="text-decoration:none; display:inline-block; margin-top:20px;">
+                GET PRO ACCESS - $2.99
+            </a>
         </div>
     `;
 }
