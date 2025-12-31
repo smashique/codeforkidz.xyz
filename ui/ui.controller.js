@@ -2,7 +2,7 @@ import { engine } from '../engine/core.logic.js';
 import { soundEngine } from '../engine/sound.logic.js';
 
 let gameTimer = null;
-let currentDiscovery = { age: '4-5', mode: 'Addition', theme: 'Space' };
+let currentDiscovery = { age: '4-5', mode: 'Sequencing', theme: 'Space' };
 
 document.addEventListener('DOMContentLoaded', () => {
     const gameContainer = document.getElementById('game-container');
@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
         gameContainer.innerHTML = `
             <div class="setup-box animate__animated animate__fadeIn">
                 <h1 class="glitch" data-text="MISSION CONTROL">MISSION CONTROL</h1>
-                <p style="color: #8b949e; margin-bottom: 30px;">Select your parameters, Pilot.</p>
+                <p style="color: #8b949e; margin-bottom: 30px;">Set your parameters, Junior Coder.</p>
                 
                 <div class="discovery-grid">
                     <div class="selection-card">
@@ -67,6 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
             currentDiscovery.theme = document.querySelector('.theme-btn.active').dataset.theme;
             
             soundEngine.init();
+            soundEngine.playLaunch(); // Play mission riser sound
             engine.initPlayers(1);
             applyInfiniteTheme();
             initGame();
@@ -77,7 +78,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function applyInfiniteTheme() {
         const config = engine.generateInfiniteTheme(currentDiscovery.theme);
         document.body.className = `theme-${config.base.toLowerCase()}`;
-        // মাউস মুভমেন্টের সাথে ফিল্টার পরিবর্তনের জন্য এটি ব্যবহার করা যায়
         document.body.style.filter = `hue-rotate(${config.hue}deg) saturate(${config.saturation}%)`;
         console.log(`OMEGA AI: Unique Mission Environment Loaded [ID: ${config.id}]`);
     }
@@ -104,21 +104,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (timeLeft <= 5 && card) {
                 card.classList.add('shake-urgent');
-                soundEngine.playTick?.(); // Optional tick sound
+                soundEngine.playTick(); // Play Adrenaline Tick
             }
             
             if (timeLeft <= 0) {
                 clearInterval(gameTimer);
-                initGame();
+                initGame(); // Time out moves to next mission
             }
         }, 1000);
     }
 
     function initGame() {
-        if (!engine.isPaid && engine.getUsedTime() >= engine.FREE_TIME_LIMIT) {
-            showPaywall();
-            return;
-        }
         startAdrenalineTimer();
         const problem = engine.createMathProblem(currentDiscovery.mode);
         renderGame(problem);
@@ -127,6 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderGame(data) {
         gameContainer.innerHTML = `
             <div class="algorithm-card glass-card">
+                <div class="level-badge">LEVEL ${engine.level}</div>
                 <div id="math-display" class="pattern-box"></div>
                 <div class="options-grid">
                     ${data.options.map(opt => `<button class="option-btn glass-btn" data-val="${opt}">${opt}</button>`).join('')}
@@ -139,11 +136,12 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         const display = document.getElementById('math-display');
+        // KaTeX Rendering for Logic/Algebra
         if (data.question.includes('$')) {
             const formula = data.question.replace(/\$/g, '');
             katex.render(formula, display, { throwOnError: false });
         } else {
-            display.innerText = data.question;
+            display.innerHTML = data.question;
         }
 
         document.querySelectorAll('.option-btn').forEach(btn => {
@@ -152,25 +150,66 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleSubmission(btn, data) {
-        const card = document.querySelector('.algorithm-card');
-        if (btn.dataset.val == data.answer) {
-            soundEngine.playCorrect();
+        const status = engine.validateAnswer(btn.dataset.val, data.answer);
+
+        if (status === "CORRECT") {
+            soundEngine.playCorrect(); // Cyber Arpeggio sound
             if (typeof confetti === 'function') confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
             engine.players[0].score += 10;
             btn.classList.add('correct-flash');
-        } else {
+            setTimeout(initGame, 1000);
+        } 
+        else if (status === "LIMIT_REACHED") {
             soundEngine.playWrong();
-            card.classList.add('fail-shake');
-            setTimeout(() => card.classList.remove('fail-shake'), 500);
+            showPaywall(); // Level 10 Lock
         }
-        setTimeout(initGame, 1000);
+        else {
+            soundEngine.playWrong();
+            const card = document.querySelector('.algorithm-card');
+            card.classList.add('fail-shake');
+            setTimeout(() => {
+                card.classList.remove('fail-shake');
+                initGame();
+            }, 1000);
+        }
+    }
+
+    function showPaywall() {
+        if (gameTimer) clearInterval(gameTimer);
+        gameContainer.innerHTML = `
+            <div class="setup-box glass-card animate__animated animate__zoomIn">
+                <h2 style="color:var(--primary-glow)">MISSION LOCKED! 🔒</h2>
+                <p>Congratulations! You've mastered the first 10 Coding Levels.</p>
+                <p style="margin-bottom:20px">Upgrade to the Explorer Pass to unlock Infinite Missions and Advanced Logic.</p>
+                
+                <a href="https://mathgameai.gumroad.com/l/MathGameAIPro" target="_blank" class="launch-btn" style="text-decoration:none; display:inline-block; margin-bottom:20px;">
+                    Unlock Infinite Missions ($2.99)
+                </a>
+                
+                <div class="activation-zone" style="margin-top:20px; border-top: 1px solid var(--glass-border); padding-top:20px;">
+                    <p style="font-size:0.8rem; color:#8b949e; margin-bottom:10px;">Already have a key?</p>
+                    <input type="text" id="license-key" class="modern-select" style="width:200px; display:inline-block;" placeholder="XXXX-XXXX-XXXX">
+                    <button id="activate-pro" class="util-btn">Activate</button>
+                </div>
+            </div>
+        `;
+
+        document.getElementById('activate-pro').onclick = () => {
+            const key = document.getElementById('license-key').value;
+            if (engine.validateLicenseKey(key)) {
+                alert("Access Granted! Infinite Multiverse Unlocked.");
+                location.reload();
+            } else {
+                alert("Invalid Access Key.");
+            }
+        };
     }
 
     // Utility Functions
     window.printReport = () => {
         const score = engine.players[0].score;
         const win = window.open('', 'PRINT', 'height=400,width=600');
-        win.document.write(`<h1>MathGameAI Victory Report</h1><p>Mission: ${currentDiscovery.mode}</p><p>Score: ${score}</p>`);
+        win.document.write(`<h1>Codeforkidz.xyz Mission Report</h1><p>Commander: Player 1</p><p>Final Score: ${score}</p><p>Level Reached: ${engine.level}</p>`);
         win.print();
     };
 
