@@ -1,67 +1,83 @@
-/* OMEGA AI - CODEFORKIDZ PRESET V21.6 */
-
-/* 1. Main Dashboard Layout */
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 5%;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(15px);
-    border-bottom: 1px solid var(--glass-border);
-    position: sticky;
-    top: 0;
-    z-index: 100;
+/* OMEGA AI - CODEFORKIDZ CLEAN V21.7 */
+:root {
+    --primary-glow: #00f2ff;
+    --accent-glow: #7000ff;
+    --glass-bg: rgba(15, 15, 27, 0.8);
+    --glass-border: rgba(255, 255, 255, 0.1);
 }
 
-/* 2. Mission Control (Setup Box) Cleanup */
-.setup-box {
+body {
+    background: #0a0a0f; /* পিওর ডার্ক ব্যাকগ্রাউন্ড যা চোখের জন্য আরামদায়ক */
+    color: white;
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
-    gap: 25px; /* এলিমেন্টগুলোর মাঝে গ্যাপ বাড়ানো হয়েছে */
-    padding: 60px 40px;
     align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
 }
 
+/* মেইন কার্ডটি একদম সেন্টারে এবং বড় রাখা */
+.setup-box, .algorithm-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 50px;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+    display: flex;
+    flex-direction: column;
+    gap: 30px; /* এলিমেন্টগুলোর মাঝে পর্যাপ্ত গ্যাপ */
+}
+
+/* ডিসকভারি গ্রিড ফিক্স (গাদাগাদি ভাব দূর করতে) */
 .discovery-grid {
-    display: grid;
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 20px;
-    width: 100%;
-    max-width: 500px;
 }
 
 .selection-card {
-    background: rgba(255, 255, 255, 0.02);
-    padding: 15px;
-    border-radius: 12px;
-    border: 1px solid var(--glass-border);
+    display: flex;
+    flex-direction: column;
     text-align: left;
+    gap: 10px;
 }
 
 .selection-card span {
-    display: block;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     color: var(--primary-glow);
     text-transform: uppercase;
-    margin-bottom: 8px;
     letter-spacing: 1px;
 }
 
-/* 3. Theme Buttons Grid */
+/* মডার্ন ড্রপডাউন */
+.modern-select {
+    background: rgba(255,255,255,0.05);
+    color: white;
+    border: 1px solid var(--glass-border);
+    padding: 15px;
+    border-radius: 12px;
+    font-size: 1rem;
+    outline: none;
+    cursor: pointer;
+}
+
+/* থিম বাটনগুলো গোছানো গ্রিডে রাখা */
 .theme-selection {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
-    margin-top: 10px;
 }
 
 .theme-btn {
     padding: 12px;
-    font-size: 0.9rem;
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
     border: 1px solid var(--glass-border);
+    background: transparent;
     color: white;
     cursor: pointer;
     transition: 0.3s;
@@ -70,27 +86,5 @@ header {
 .theme-btn.active {
     background: var(--primary-glow);
     color: black;
-    box-shadow: 0 0 15px var(--primary-glow);
-}
-
-/* 4. Level Badge & HUD */
-.level-badge {
-    background: var(--accent-glow);
-    color: white;
-    padding: 5px 15px;
-    border-radius: 20px;
-    font-size: 0.7rem;
-    font-weight: 900;
-    display: inline-block;
-    margin-bottom: 20px;
-    letter-spacing: 2px;
-}
-
-/* 5. Centralized Main App */
-main#app {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 40px 20px;
+    font-weight: bold;
 }
